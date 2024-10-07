@@ -2,35 +2,76 @@ package com.nodes.demo.controller;
 
 import com.nodes.demo.model.LocationNode;
 import com.nodes.demo.service.LocationNodeService;
-import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/nodes")
 public class LocationNodeController {
 
-//    @Autowired
-    private LocationNodeService locationNodeService;
+    private static final Logger logger = LoggerFactory.getLogger(LocationNodeController.class);
 
     @Autowired
     private LocationNodeService service;
 
-    // 1. Get the tree or specific node
-    @GetMapping("/{parentId}")
-    public ResponseEntity<List<LocationNode>> getTree(@PathVariable Integer parentId) {
-        return ResponseEntity.ok(service.getTree(parentId));
+    // 1. Get the whole tree
+    @GetMapping("/tree")
+    public ResponseEntity<List<LocationNode>> getTree() {
+        List<LocationNode> listNodes = service.getTree();
+
+        logger.debug("Responding list size is - {}", listNodes.size());
+        logger.debug("Responding list data is - {}", listNodes);
+
+        return ResponseEntity.ok(listNodes);
     }
 
-    // 2. Add a new node
-    @PostMapping("/{parentId}")
-    public ResponseEntity<LocationNode> addNode(@PathVariable Integer parentId, @RequestParam String title) {
-        return ResponseEntity.ok(service.addNode(parentId, title));
+    // Add new node
+//    const addParentNode = async (title) => {
+//            // await axios.post(`${API_BASE_URL}/${parentId}`, { title });
+//            // await axios.post(`${API_BASE_URL}/`, { title });
+//            await axios.post(`${API_BASE_URL}/addParent/${title}`);
+//    };
+//
+//    // Add new node
+//    const addNode = async (parentId, title) => {
+//            await axios.post(`${API_BASE_URL}/addChild/${parentId}/${title}`);
+//            // await axios.post(`/api/locationNodes/${parentId}`, { title });
+//    };
+
+
+    @PostMapping("/addParent/{title}")
+//    public ResponseEntity<LocationNode> addNode(  @RequestParam(defaultValue = "b", name = "title", value = "title") String title) {
+    public ResponseEntity<LocationNode> addParentNode( @PathVariable String title) {
+
+        try {
+            logger.debug("Responding list data is - {}", title);
+            return ResponseEntity.ok(service.addParentNode( title));
+        } catch (Exception e) {
+
+            logger.error("exception getLocalizedMessage is - {}", e.getLocalizedMessage());
+            logger.error("exception getCause is - {}", e.getCause());
+            return ResponseEntity.ok(service.addParentNode( title));
+        }
+    }
+
+    @PostMapping("/addChild/{parentId}/{title}")
+    public ResponseEntity<LocationNode> addChildNode( @PathVariable Integer parentId, @PathVariable String title) {
+
+        try {
+            logger.debug("Responding parentId data is - {}", parentId);
+            logger.debug("Responding title data is - {}", title);
+            return ResponseEntity.ok(service.addChildNode(parentId, title));
+        } catch (Exception e) {
+
+            logger.error("exception getLocalizedMessage is - {}", e.getLocalizedMessage());
+            logger.error("exception getCause is - {}", e.getCause());
+            return ResponseEntity.ok(service.addChildNode(parentId, title));
+        }
     }
 
     // 3. Update node
@@ -59,4 +100,44 @@ public class LocationNodeController {
         return ResponseEntity.ok().build();
     }
 
+//    @GetMapping("/{id}")
+//    public ResponseEntity<LocationNode> getNode(@PathVariable Long id) {
+//        LocationNode node = locationNodeService.getNode(id);
+//        return ResponseEntity.ok(node);
+//    }
+//
+//    @GetMapping("/tree")
+//    public ResponseEntity<List<LocationNode>> getTree() {
+//        return ResponseEntity.ok(locationNodeService.getTree());
+//    }
+//
+//    @PostMapping("/{parentId}")
+//    public ResponseEntity<LocationNode> createNode(@PathVariable Long parentId, @RequestBody String name) {
+//        LocationNode newNode = locationNodeService.createNode(parentId, name);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(newNode);
+//    }
+//
+//    @PutMapping("/{id}")
+//    public ResponseEntity<LocationNode> updateNode(@PathVariable Long id, @RequestBody String newName) {
+//        LocationNode updatedNode = locationNodeService.updateNode(id, newName);
+//        return ResponseEntity.ok(updatedNode);
+//    }
+//
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<Void> deleteNode(@PathVariable Long id) {
+//        locationNodeService.deleteNode(id);
+//        return ResponseEntity.noContent().build();
+//    }
+//
+//    @PutMapping("/move/{nodeId}/{newParentId}")
+//    public ResponseEntity<Void> moveNode(@PathVariable Long nodeId, @PathVariable Long newParentId) {
+//        locationNodeService.moveNode(nodeId, newParentId);
+//        return ResponseEntity.noContent().build();
+//    }
+//
+//    @PutMapping("/reorder/{nodeId}/{newPosition}")
+//    public ResponseEntity<Void> reorderNode(@PathVariable Long nodeId, @PathVariable Integer newPosition) {
+//        locationNodeService.reorderNode(nodeId, newPosition);
+//        return ResponseEntity.noContent().build();
+//    }
 }

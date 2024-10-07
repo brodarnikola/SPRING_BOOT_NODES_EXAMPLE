@@ -12,4 +12,6 @@ public interface LocationNodeRepository extends JpaRepository<LocationNode, Long
 
     List<LocationNode> findByParentNodeIdOrderByOrderingAsc(Integer parentId);
     Optional<LocationNode> findById(Integer id);
+
+    List<LocationNode> findAll();
 }
