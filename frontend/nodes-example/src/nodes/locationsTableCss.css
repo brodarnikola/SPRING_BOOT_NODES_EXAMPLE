@@ -1,4 +1,4 @@
-table {
+/* table {
     border-collapse: collapse;
     width: 100%;
 }
@@ -11,4 +11,53 @@ th, td {
 
 th {
     background-color: #f2f2f2;
+}
+
+
+.location-node-table table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.location-node-table th,
+.location-node-table td {
+    border: 1px solid rgb(70, 185, 47);
+    padding: 8px;
+    text-align: left;
+}
+
+.location-node-table th {
+    background-color: #f2f2f2;
+} */
+
+.location-node-table table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.location-node-table th,
+.location-node-table td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+}
+
+.location-node-table th {
+    background-color: #f2f2f2;
+}
+
+.location-node-table tr.level-0 {
+    font-weight: bold;
+}
+
+.location-node-table tr.level-1 {
+    background-color: #f9f9f9;
+}
+
+.location-node-table tr.level-2 {
+    background-color: #f0f0f0;
+}
+
+.location-node-table button {
+    margin-right: 5px;
 }
