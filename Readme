@@ -1,0 +1,20 @@
+Pseudo Code for SQL Database Access
+
+Fetching nodes under a parent:
+SELECT * FROM locationNode WHERE parent_node_id = ? ORDER BY ordering;
+
+Inserting a new node:
+INSERT INTO locationNode (title, parent_node_id, ordering)
+VALUES (?, ?, ?);
+
+Updating a node's title:
+UPDATE locationNode SET title = ? WHERE id = ?;
+
+Deleting a node and its children:
+DELETE FROM locationNode WHERE id = ?;
+
+Moving a node to a new parent:
+UPDATE locationNode SET parent_node_id = ?, ordering = ? WHERE id = ?;
+
+Reordering nodes:
+UPDATE locationNode SET ordering = ? WHERE id = ?;
