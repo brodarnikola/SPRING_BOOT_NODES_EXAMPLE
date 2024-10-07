@@ -30,20 +30,6 @@ public class LocationNodeController {
         return ResponseEntity.ok(listNodes);
     }
 
-    // Add new node
-//    const addParentNode = async (title) => {
-//            // await axios.post(`${API_BASE_URL}/${parentId}`, { title });
-//            // await axios.post(`${API_BASE_URL}/`, { title });
-//            await axios.post(`${API_BASE_URL}/addParent/${title}`);
-//    };
-//
-//    // Add new node
-//    const addNode = async (parentId, title) => {
-//            await axios.post(`${API_BASE_URL}/addChild/${parentId}/${title}`);
-//            // await axios.post(`/api/locationNodes/${parentId}`, { title });
-//    };
-
-
     @PostMapping("/addParent/{title}")
 //    public ResponseEntity<LocationNode> addNode(  @RequestParam(defaultValue = "b", name = "title", value = "title") String title) {
     public ResponseEntity<LocationNode> addParentNode( @PathVariable String title) {

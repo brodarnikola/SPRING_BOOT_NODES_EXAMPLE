@@ -30,7 +30,7 @@ th {
     background-color: #f2f2f2;
 } */
 
-.location-node-table table {
+/* .location-node-table table {
     border-collapse: collapse;
     width: 100%;
 }
@@ -60,4 +60,84 @@ th {
 
 .location-node-table button {
     margin-right: 5px;
+} */
+
+
+.location-node-table {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+}
+
+/* Table styles */
+.location-node-table table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.location-node-table th,
+.location-node-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+.location-node-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+/* Row level styles */
+.location-node-table tr.level-0 {
+    font-weight: bold;
+}
+
+.location-node-table tr.level-1 {
+    background-color: #f9f9f9;
+}
+
+.location-node-table tr.level-2 {
+    background-color: #f0f0f0;
+}
+
+/* Button styles */
+.location-node-table button {
+    margin-right: 5px;
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.location-node-table button:hover {
+    background-color: #45a049;
+}
+
+/* Form styles */
+.location-node-table h2 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.location-node-table input[type="text"] {
+    padding: 8px;
+    margin-right: 10px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+}
+
+/* Responsive design */
+@media screen and (max-width: 600px) {
+    .location-node-table {
+        padding: 10px;
+    }
+    
+    .location-node-table th,
+    .location-node-table td {
+        padding: 8px;
+    }
 }

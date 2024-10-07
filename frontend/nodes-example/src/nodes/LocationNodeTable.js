@@ -160,6 +160,7 @@ const LocationNodeTable = () => {
     const [expandedNodes, setExpandedNodes] = useState({});
     const [parentTitle, setParentTitle] = useState('');
     const [editNodeId, setEditNodeId] = useState(null);
+    const [closeEditNodeId, setCloseEditNodeId] = useState(false);
     const [childTitle, setChildTitle] = useState('');
     const [addParentId, setAddParentId] = useState(null);
 
@@ -197,7 +198,18 @@ const LocationNodeTable = () => {
                         { isParent && 
                             ( <button onClick={() => setAddParentId(node.id)}>Add</button>)
                         }
-                        <button onClick={() => setEditNodeId(node.id)}>Edit</button>
+                        <button onClick={() =>
+                            {
+                                if( node.id === editNodeId && !closeEditNodeId ) {
+                                    setCloseEditNodeId(true)
+                                }    
+                                else {
+                                    setCloseEditNodeId(false)
+                                }
+                                setEditNodeId(node.id)
+                            }
+
+                        }>Edit</button>
                         <button onClick={() => deleteNode(node.id)}>Delete</button>
                         {childNodes.length > 0 && (
                             <button onClick={() => toggleExpand(node.id)}>
@@ -283,9 +295,9 @@ const LocationNodeTable = () => {
                 </div>
             )}
 
-            {editNodeId && (
+            {editNodeId && !closeEditNodeId && (
                 <div>
-                    <h2>Edit Node</h2>
+                    <h2>Edit Node {editNodeId}</h2>
                     <input
                         type="text"
                         value={parentTitle}
