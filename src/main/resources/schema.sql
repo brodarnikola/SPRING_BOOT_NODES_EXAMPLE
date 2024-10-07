@@ -7,3 +7,5 @@ CREATE TABLE `location_node` (
   CONSTRAINT `fk_locationNode_parent` FOREIGN KEY (`parent_node_id`) REFERENCES `location_node` (`id`)
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--T he foreign key (parent_node_id) is defined with ON DELETE CASCADE to automatically delete child nodes when a parent node is deleted
