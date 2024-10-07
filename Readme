@@ -1,4 +1,4 @@
-Pseudo Code for SQL Database Access
+## Pseudo Code for SQL Database Access
 
 Fetching nodes under a parent:
 SELECT * FROM locationNode WHERE parent_node_id = ? ORDER BY ordering;
