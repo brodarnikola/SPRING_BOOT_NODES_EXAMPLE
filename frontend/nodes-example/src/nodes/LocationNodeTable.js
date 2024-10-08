@@ -80,35 +80,9 @@ const LocationNodeTable = () => {
         try {
             await axios.post(`${API_BASE_URL}/reorder`, affectedNodes);
         } catch (error) {
-            console.error("Error updating nodes", error);
-            // Revert changes if the update fails
+            console.error("Error updating nodes", error); 
             fetchNodes();
-        }
-
-        // try {
-        //     await axios.post(`${API_BASE_URL}/reorder`, {
-        //         parentNodeId: destinationParentId,
-        //         ordering: destination.index
-        //     });
-        //     fetchNodes();
-        //     setParentTitle('');
-        // } catch (error) {
-        //     console.error("Error adding parent node", error);
-        // }
-
-        // // Call backend to update the nodes
-        // try {
-        //     await Promise.all(affectedNodes.map(node => 
-        //         axios.put(`${API_BASE_URL}/nodes/${node.id}`, {
-        //             parentNodeId: node.parentNodeId,
-        //             ordering: node.ordering
-        //         })
-        //     ));
-        // } catch (error) {
-        //     console.error("Error updating nodes", error);
-        //     // Revert changes if the update fails
-        //     fetchNodes();
-        // }
+        } 
     };
 
     const renderNode = (node, level = 0, localIndex = 0) => {
@@ -201,8 +175,7 @@ const LocationNodeTable = () => {
 
     const editNode = async () => {
         try {
-            await axios.put(`${API_BASE_URL}/update/${editNodeId}/${parentTitle}`);
-                // , { title: parentTitle });
+            await axios.put(`${API_BASE_URL}/update/${editNodeId}/${parentTitle}`); 
             fetchNodes();
             setEditNodeId(null);
             setParentTitle('');
