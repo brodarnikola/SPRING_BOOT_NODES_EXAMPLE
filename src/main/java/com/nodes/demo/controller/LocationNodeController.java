@@ -1,6 +1,7 @@
 package com.nodes.demo.controller;
 
 import com.nodes.demo.model.LocationNode;
+import com.nodes.demo.model.request.ReorderRequest;
 import com.nodes.demo.service.LocationNodeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,15 +80,21 @@ public class LocationNodeController {
     }
 
     // 5. Move node
-    @PutMapping("/{nodeId}/move/{newParentId}")
-    public ResponseEntity<LocationNode> moveNode(@PathVariable Integer nodeId, @PathVariable Integer newParentId) {
-        return ResponseEntity.ok(service.moveNode(nodeId, newParentId));
-    }
+//    @PutMapping("/{nodeId}/move/{newParentId}")
+//    public ResponseEntity<LocationNode> moveNode(@PathVariable Integer nodeId, @PathVariable Integer newParentId) {
+//        return ResponseEntity.ok(service.moveNode(nodeId, newParentId));
+//    }
 
     // 6. Reorder nodes
-    @PutMapping("/{parentId}/reorder")
-    public ResponseEntity<Void> reorderNodes(@PathVariable Integer parentId, @RequestBody List<Integer> orderedNodeIds) {
-        service.reorderNodes(parentId, orderedNodeIds);
+//    @PostMapping("/reorder")
+//    public ResponseEntity<Void> reorderNodes( @RequestBody ReorderRequest reorderRequest) {
+//        service.reorderNodes(reorderRequest);
+//        return ResponseEntity.ok().build();
+//    }
+
+    @PostMapping("/reorder")
+    public ResponseEntity<Void> reorderNodes(@RequestBody List<ReorderRequest> reorderRequests) {
+        service.reorderNodes(reorderRequests);
         return ResponseEntity.ok().build();
     }
 

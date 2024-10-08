@@ -1,6 +1,7 @@
 package com.nodes.demo.service;
 
 import com.nodes.demo.model.LocationNode;
+import com.nodes.demo.model.request.ReorderRequest;
 import com.nodes.demo.repository.LocationNodeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +81,6 @@ public class LocationNodeService {
         return repository.save(newNode);
     }
 
-    // 3. Modifying node data
     public LocationNode updateNode(Integer nodeId, String newTitle) {
         LocationNode node = repository.findById(nodeId)
                 .orElseThrow(() -> new RuntimeException("Node not found"));
@@ -88,7 +88,6 @@ public class LocationNodeService {
         return repository.save(node);
     }
 
-    // 4. Deleting a node and its children
     public void deleteNode(Integer nodeId) {
         LocationNode node = repository.findById(nodeId)
                 .orElseThrow(() -> new RuntimeException("Node not found"));
@@ -107,7 +106,6 @@ public class LocationNodeService {
         repository.delete(node);
     }
 
-    // 5. Moving a node to a different parent
     public LocationNode moveNode(Integer nodeId, Integer newParentId) {
         LocationNode node = repository.findById(nodeId)
                 .orElseThrow(() -> new RuntimeException("Node not found"));
@@ -126,94 +124,14 @@ public class LocationNodeService {
         return repository.save(node);
     }
 
-    // 6. Reordering nodes within the same parent
-    public void reorderNodes(Integer parentId, List<Integer> orderedNodeIds) {
-        List<LocationNode> nodes = repository.findByParentNodeIdOrderByOrderingAsc(parentId);
-        for (int i = 0; i < orderedNodeIds.size(); i++) {
-            LocationNode node = repository.findById(orderedNodeIds.get(i))
+    public void reorderNodes(List<ReorderRequest> reorderRequests) {
+        for (ReorderRequest reorderRequest : reorderRequests) {
+            LocationNode node = repository.findById(reorderRequest.getId())
                     .orElseThrow(() -> new RuntimeException("Node not found"));
-            node.setOrdering(i + 1);
+            node.setParentNodeId(reorderRequest.getParentNodeId());
+            node.setOrdering(reorderRequest.getOrdering());
             repository.save(node);
         }
     }
 
-//    @Autowired
-//    private LocationNodeRepository locationNodeRepository;
-//
-//    public LocationNode getNode(Long id) {
-//        return locationNodeRepository.findById(id).orElseThrow(() -> new AppException("Node not found"));
-//    }
-//
-//    public List<LocationNode> getTree() {
-//        // Get the root node and recursively fetch the whole tree
-//        LocationNode root = locationNodeRepository.findById(1L).orElseThrow(() -> new AppException("Root not found"));
-//        return getChildren(root);
-//    }
-//
-//    public LocationNode createNode(Long parentId, String name) {
-//        LocationNode parent = getNode(parentId);
-//        LocationNode newNode = new LocationNode();
-//        newNode.setParent(parent);
-//        newNode.setName(name);
-//        newNode.setPosition(parent.getChildren().size() + 1); // Next free position
-//        parent.getChildren().add(newNode);
-//        return locationNodeRepository.save(newNode);
-//    }
-//
-//    public LocationNode updateNode(Long id, String newName) {
-//        LocationNode node = getNode(id);
-//        node.setName(newName);
-//        return locationNodeRepository.save(node);
-//    }
-//
-//    public void deleteNode(Long id) {
-//        LocationNode node = getNode(id);
-//        if (node.getId() == 1L) {
-//            throw new IllegalArgumentException("Cannot delete root node");
-//        }
-//        locationNodeRepository.delete(node);
-//    }
-//
-//    public void moveNode(Long nodeId, Long newParentId) {
-//        LocationNode node = getNode(nodeId);
-//        LocationNode newParent = getNode(newParentId);
-//
-//        // Remove node from old parent
-//        node.getParent().getChildren().remove(node);
-//
-//        // Add node to new parent
-//        node.setParent(newParent);
-//        node.setPosition(newParent.getChildren().size() + 1); // New free position under new parent
-//        newParent.getChildren().add(node);
-//
-//        locationNodeRepository.save(node);
-//    }
-//
-//    public void reorderNode(Long nodeId, Integer newPosition) {
-//        LocationNode node = getNode(nodeId);
-//        LocationNode parent = node.getParent();
-//
-//        // Recalculate positions of siblings
-//        List<LocationNode> siblings = parent.getChildren();
-//        siblings.remove(node);  // Temporarily remove the node
-//
-//        // Insert the node at the new position
-//        siblings.add(newPosition - 1, node);
-//
-//        // Update positions of all siblings
-//        for (int i = 0; i < siblings.size(); i++) {
-//            siblings.get(i).setPosition(i + 1);
-//        }
-//
-//        locationNodeRepository.saveAll(siblings);
-//    }
-//
-//    private List<LocationNode> getChildren(LocationNode parent) {
-//        // Recursively get children
-//        List<LocationNode> children = locationNodeRepository.findByParent(parent);
-//        for (LocationNode child : children) {
-//            child.setChildren(getChildren(child));
-//        }
-//        return children;
-//    }
 }

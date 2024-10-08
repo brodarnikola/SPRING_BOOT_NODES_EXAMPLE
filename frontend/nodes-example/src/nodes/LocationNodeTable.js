@@ -74,7 +74,29 @@ const LocationNodeTable = () => {
  
         setNodes(updatedNodes);
 
-        // Call backend to update the nodes
+        console.log("destionation parent id: ", destinationParentId);
+        console.log("destination.index: ", destination.index);
+
+        try {
+            await axios.post(`${API_BASE_URL}/reorder`, affectedNodes);
+        } catch (error) {
+            console.error("Error updating nodes", error);
+            // Revert changes if the update fails
+            fetchNodes();
+        }
+
+        // try {
+        //     await axios.post(`${API_BASE_URL}/reorder`, {
+        //         parentNodeId: destinationParentId,
+        //         ordering: destination.index
+        //     });
+        //     fetchNodes();
+        //     setParentTitle('');
+        // } catch (error) {
+        //     console.error("Error adding parent node", error);
+        // }
+
+        // // Call backend to update the nodes
         // try {
         //     await Promise.all(affectedNodes.map(node => 
         //         axios.put(`${API_BASE_URL}/nodes/${node.id}`, {
@@ -92,8 +114,8 @@ const LocationNodeTable = () => {
     const renderNode = (node, level = 0, localIndex = 0) => {
         const childNodes = 
             nodes
-            .filter(n => n.parentNodeId === node.id);
-            // .sort((a, b) => a.ordering - b.ordering);
+            .filter(n => n.parentNodeId === node.id)
+            .sort((a, b) => a.ordering - b.ordering);
         const isExpanded = expandedNodes[node.id];
 
         return (
