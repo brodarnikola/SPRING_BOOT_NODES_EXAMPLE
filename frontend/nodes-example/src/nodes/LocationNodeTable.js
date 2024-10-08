@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; 
+import { DragDropContext, Droppable } from 'react-beautiful-dnd'; 
 import axios from 'axios';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { API_BASE_URL } from '../constants';
+
 import './locationsTableCss.css';
+import Node from './Node';
+import NodeActions from './NodeActions'; 
 
 const LocationNodeTable = () => {
     const [nodes, setNodes] = useState([]);
@@ -74,84 +77,15 @@ const LocationNodeTable = () => {
  
         setNodes(updatedNodes);
 
-        console.log("destionation parent id: ", destinationParentId);
-        console.log("destination.index: ", destination.index);
-
-        try {
-            await axios.post(`${API_BASE_URL}/reorder`, affectedNodes);
+        try { 
+            await axios.post(`${API_BASE_URL}/reorder`, affectedNodes); 
+            // await reorderNodes(affectedNodes);
         } catch (error) {
             console.error("Error updating nodes", error); 
-            fetchNodes();
+            fetchNodes(setNodes);
         } 
     };
 
-    const renderNode = (node, level = 0, localIndex = 0) => {
-        const childNodes = 
-            nodes
-            .filter(n => n.parentNodeId === node.id)
-            .sort((a, b) => a.ordering - b.ordering);
-        const isExpanded = expandedNodes[node.id];
-
-        return (
-            <React.Fragment key={node.id}>
-                <Draggable draggableId={node.id.toString()} index={localIndex}>
-                    {(provided) => (
-                        <tr
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            className={`level-${level}`}
-                        >
-                            <td>{node.id}</td>
-                            <td style={{ paddingLeft: `${level * 20}px` }}>{node.title}</td>
-                            <td>{node.ordering}</td>
-                            <td>
-                                {node.parentNodeId === null && 
-                                    <button onClick={() => setAddParentId(node.id)}>Add</button>
-                                }
-                                <button onClick={() => {
-                                    if (node.id === editNodeId && !closeEditNodeId) {
-                                        setCloseEditNodeId(true)
-                                    } else {
-                                        setCloseEditNodeId(false)
-                                    }
-                                    setEditNodeId(node.id)
-                                }}>Edit</button>
-                                {
-                                    node.id != 1 &&    
-                                    <button onClick={() => deleteNode(node.id)}>Delete</button>
-                                }
-                                {childNodes.length > 0 && (
-                                    <button onClick={() => toggleExpand(node.id)}>
-                                        {isExpanded ? 'Collapse' : 'Expand'}
-                                    </button>
-                                )}
-                            </td>
-                        </tr>
-                    )}
-                </Draggable>
-                {isExpanded && (
-                    <Droppable droppableId={node.id.toString()} type="NODE">
-                        {(provided) => (
-                            <tr>
-                                <td colSpan="4">
-                                    <table {...provided.droppableProps} ref={provided.innerRef}>
-                                        <tbody> 
-                                        {childNodes.map((childNode, index) => (
-                                            renderNode(childNode, level + 1, index)
-                                        ))}
-                                        {provided.placeholder} 
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                        )}
-                    </Droppable>
-                )}
-            </React.Fragment>
-        );
-    };
- 
     const addParentNode = async (title) => {
         try {
             await axios.post(`${API_BASE_URL}/addParent/${title}`);
@@ -192,7 +126,8 @@ const LocationNodeTable = () => {
             console.error("Error deleting node", error);
         }
     };
- 
+
+
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <div className="location-node-table">
@@ -210,50 +145,42 @@ const LocationNodeTable = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {nodes.filter(node => node.parentNodeId === null).map((node, index) => renderNode(node, 0, index))}
+                                {nodes.filter(node => node.parentNodeId === null).map((node, index) => (
+                                    <Node
+                                        key={node.id}
+                                        node={node}
+                                        level={0}
+                                        localIndex={index}
+                                        nodes={nodes}
+                                        expandedNodes={expandedNodes}
+                                        toggleExpand={toggleExpand}
+                                        setAddParentId={setAddParentId}
+                                        setEditNodeId={setEditNodeId}
+                                        setCloseEditNodeId={setCloseEditNodeId}
+                                        editNodeId={editNodeId}
+                                        closeEditNodeId={closeEditNodeId}
+                                       deleteNode={deleteNode}
+                                    />
+                                ))}
                                 {provided.placeholder}
                             </tbody>
                         </table>
                     )}
                 </Droppable> 
 
-                
-                {addParentId && (
-                <div>
-                    <h2>Add Child Node under Parent ID {addParentId}</h2>
-                    <input
-                        type="text"
-                        value={childTitle}
-                        onChange={(e) => setChildTitle(e.target.value)}
-                        placeholder="Child node title"
-                    />
-                    <button onClick={() => addNode(addParentId, childTitle)}>Add Child</button>
-                </div>
-            )}
-
-            {editNodeId && !closeEditNodeId && (
-                <div>
-                    <h2>Edit Node {editNodeId}</h2>
-                    <input
-                        type="text"
-                        value={parentTitle}
-                        onChange={(e) => setParentTitle(e.target.value)}
-                        placeholder="New title"
-                    />
-                    <button onClick={editNode}>Save</button>
-                </div>
-            )}
-
-            <div>
-                <h2>Add new parent node</h2>
-                <input
-                    type="text"
-                    value={parentTitle}
-                    onChange={(e) => setParentTitle(e.target.value)}
-                    placeholder="Parent node title"
+                <NodeActions
+                    addParentId={addParentId}
+                    setAddParentId={setAddParentId}
+                    childTitle={childTitle}
+                    setChildTitle={setChildTitle}
+                    parentTitle={parentTitle}
+                    setParentTitle={setParentTitle}
+                    editNodeId={editNodeId}
+                    closeEditNodeId={closeEditNodeId}
+                    addNode={addNode}
+                    editNode={editNode}
+                    addParentNode={addParentNode}
                 />
-                <button onClick={() => addParentNode(parentTitle)}>Add parent</button>
-            </div>
             </div>
         </DragDropContext>
     );
