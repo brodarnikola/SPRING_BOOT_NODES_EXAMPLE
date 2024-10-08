@@ -8,7 +8,7 @@ const LocationNodeTable = () => {
     const [nodes, setNodes] = useState([]);
     const [expandedNodes, setExpandedNodes] = useState({});
     const [parentTitle, setParentTitle] = useState('');
-    const [editNodeId, setEditNodeId] = useState(null);
+    const [editNodeId, setEditNodeId] = useState(null); 
     const [closeEditNodeId, setCloseEditNodeId] = useState(false);
     const [childTitle, setChildTitle] = useState('');
     const [addParentId, setAddParentId] = useState(null);
@@ -34,6 +34,7 @@ const LocationNodeTable = () => {
     };
 
     const onDragEnd = async (result) => {
+
         const { destination, source, draggableId } = result;
 
         if (!destination) {
@@ -51,74 +52,79 @@ const LocationNodeTable = () => {
         const destinationParentId = parseInt(destination.droppableId);
 
         const updatedNodes = Array.from(nodes);
-        
-        console.log(" destination: ", destination);
-        console.log(" source: ", source);
-        
-        // console.log(" draggableId: ", draggableId);
-        
-        
-        // console.log(" nodes: ", nodes);
- 
-        // console.log("updatedNodes.splice: ", updatedNodes.splice(updatedNodes.findIndex(node => node.id.toString() === draggableId), 1));
-
-        const [reorderedNode] = updatedNodes.splice(updatedNodes.findIndex(node => node.id.toString() === draggableId), 1); 
+        const [reorderedNode] = updatedNodes.splice(updatedNodes.findIndex(node => node.id.toString() === draggableId), 1);
 
         reorderedNode.parentNodeId = destinationParentId;
 
-
-        
-        // console.log("UNSorted nodes: ", updatedNodes);
-
-        let increaseIndex = 0
-        if( destination.index > source.index && source.index != 0 )
-            increaseIndex++
-
-        
-
-         // Insert the node at the new position
-         updatedNodes.splice(
-            updatedNodes.findIndex(node => node.parentNodeId === destinationParentId) + destination.index, // + increaseIndex,
+        // Insert the node at the new position
+        updatedNodes.splice(
+            updatedNodes.findIndex(node => node.parentNodeId === destinationParentId) + destination.index,
             0,
             reorderedNode
-        ) ;
- 
+        );
+
         // Update ordering for affected nodes
         const affectedNodes = updatedNodes.filter(node => 
             node.parentNodeId === sourceParentId || node.parentNodeId === destinationParentId
         );
 
         affectedNodes.forEach((node, index) => {
-            node.ordering = index; 
-        }); 
- 
+            node.ordering = index + 1;
+        });
+
         setNodes(updatedNodes);
 
-        // Call backend to update the nodes
+        // const { destination, source, draggableId } = result;
+
+        // if (!destination) {
+        //     return;
+        // }
+
+        // if (
+        //     destination.droppableId === source.droppableId &&
+        //     destination.index === source.index
+        // ) {
+        //     return;
+        // }
+
+        // const draggedNode = nodes.find(node => node.id.toString() === draggableId);
+        // const newParentId = parseInt(destination.droppableId);
+
+        // // Update the node's parent and ordering
+        // const updatedNodes = nodes.map(node => {
+        //     if (node.id.toString() === draggableId) {
+        //         console.log("node data is: ", node);
+        //         console.log("parentNodeId data is: ", newParentId);
+        //         console.log("ordering data is: ", destination.index);
+        //         return { ...node, parentNodeId: newParentId, ordering: destination.index };
+        //     }
+        //     return node;
+        // });
+
+        // setNodes(updatedNodes);
+
+        // // Call backend to update the node
         // try {
-        //     await Promise.all(affectedNodes.map(node => 
-        //         axios.put(`${API_BASE_URL}/nodes/${node.id}`, {
-        //             parentNodeId: node.parentNodeId,
-        //             ordering: node.ordering
-        //         })
-        //     ));
+        //     await axios.put(`${API_BASE_URL}/nodes/${draggableId}`, {
+        //         parentNodeId: newParentId,
+        //         ordering: destination.index
+        //     });
         // } catch (error) {
-        //     console.error("Error updating nodes", error);
+        //     console.error("Error updating node", error);
         //     // Revert changes if the update fails
         //     fetchNodes();
         // }
     };
 
-    const renderNode = (node, level = 0, localIndex = 0) => {
-        const childNodes = 
-            nodes
-            .filter(n => n.parentNodeId === node.id);
-            // .sort((a, b) => a.ordering - b.ordering);
+    const renderNode = (node, isParent = false, level = 0) => {
+        const childNodes = nodes.filter(n => n.parentNodeId === node.id);
         const isExpanded = expandedNodes[node.id];
 
         return (
             <React.Fragment key={node.id}>
-                <Draggable draggableId={node.id.toString()} index={localIndex}>
+                <Draggable draggableId={node.id.toString()} index={node.ordering - 1} 
+                // isDragDisabled={node.parentNodeId === null}
+                >
                     {(provided) => (
                         <tr
                             ref={provided.innerRef}
@@ -130,17 +136,21 @@ const LocationNodeTable = () => {
                             <td style={{ paddingLeft: `${level * 20}px` }}>{node.title}</td>
                             <td>{node.ordering}</td>
                             <td>
-                                {node.parentNodeId === null && 
-                                    <button onClick={() => setAddParentId(node.id)}>Add</button>
+                            { isParent && 
+                            ( <button onClick={() => setAddParentId(node.id)}>Add</button>)
+                        }
+                        <button onClick={() =>
+                            {
+                                if( node.id === editNodeId && !closeEditNodeId ) {
+                                    setCloseEditNodeId(true)
+                                }    
+                                else {
+                                    setCloseEditNodeId(false)
                                 }
-                                <button onClick={() => {
-                                    if (node.id === editNodeId && !closeEditNodeId) {
-                                        setCloseEditNodeId(true)
-                                    } else {
-                                        setCloseEditNodeId(false)
-                                    }
-                                    setEditNodeId(node.id)
-                                }}>Edit</button>
+                                setEditNodeId(node.id)
+                            }
+
+                        }>Edit</button>
                                 <button onClick={() => deleteNode(node.id)}>Delete</button>
                                 {childNodes.length > 0 && (
                                     <button onClick={() => toggleExpand(node.id)}>
@@ -157,11 +167,9 @@ const LocationNodeTable = () => {
                             <tr>
                                 <td colSpan="4">
                                     <table {...provided.droppableProps} ref={provided.innerRef}>
-                                        <tbody> 
-                                        {childNodes.map((childNode, index) => (
-                                            renderNode(childNode, level + 1, index)
-                                        ))}
-                                        {provided.placeholder} 
+                                        <tbody>
+                                            {childNodes.map(childNode => renderNode(childNode, false, level + 1))}
+                                            {provided.placeholder}
                                         </tbody>
                                     </table>
                                 </td>
@@ -172,8 +180,6 @@ const LocationNodeTable = () => {
             </React.Fragment>
         );
     };
-
-    
 
     
 
@@ -235,14 +241,28 @@ const LocationNodeTable = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {nodes.filter(node => node.parentNodeId === null).map((node, index) => renderNode(node, 0, index))}
+                            {/* {nodes.filter(node => node.parentNodeId === null).nodes.map((node, index) => (
+                  <Draggable key={node.id} draggableId={node.id.toString()} index={index}>
+                    {(provided) => (
+                      <tr
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
+                        <td>{node.id}</td>
+                        <td>{node.title}</td>
+                      </tr>
+                    )}
+                  </Draggable>
+                ))} */}
+                                {nodes.filter(node => node.parentNodeId === null).map(node => renderNode(node, true))}
+
                                 {provided.placeholder}
                             </tbody>
                         </table>
                     )}
-                </Droppable> 
+                </Droppable>
 
-                
                 {addParentId && (
                 <div>
                     <h2>Add Child Node under Parent ID {addParentId}</h2>
@@ -279,6 +299,7 @@ const LocationNodeTable = () => {
                 />
                 <button onClick={() => addParentNode(parentTitle)}>Add parent</button>
             </div>
+ 
             </div>
         </DragDropContext>
     );
