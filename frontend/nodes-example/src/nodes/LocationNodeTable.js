@@ -51,34 +51,14 @@ const LocationNodeTable = () => {
         const destinationParentId = parseInt(destination.droppableId);
 
         const updatedNodes = Array.from(nodes);
-        
-        console.log(" destination: ", destination);
-        console.log(" source: ", source);
-        
-        // console.log(" draggableId: ", draggableId);
-        
-        
-        // console.log(" nodes: ", nodes);
- 
-        // console.log("updatedNodes.splice: ", updatedNodes.splice(updatedNodes.findIndex(node => node.id.toString() === draggableId), 1));
-
+       
         const [reorderedNode] = updatedNodes.splice(updatedNodes.findIndex(node => node.id.toString() === draggableId), 1); 
 
-        reorderedNode.parentNodeId = destinationParentId;
-
-
-        
-        // console.log("UNSorted nodes: ", updatedNodes);
-
-        let increaseIndex = 0
-        if( destination.index > source.index && source.index != 0 )
-            increaseIndex++
-
-        
-
+        reorderedNode.parentNodeId = destinationParentId; 
+ 
          // Insert the node at the new position
          updatedNodes.splice(
-            updatedNodes.findIndex(node => node.parentNodeId === destinationParentId) + destination.index, // + increaseIndex,
+            updatedNodes.findIndex(node => node.parentNodeId === destinationParentId) + destination.index, 
             0,
             reorderedNode
         ) ;
@@ -141,7 +121,10 @@ const LocationNodeTable = () => {
                                     }
                                     setEditNodeId(node.id)
                                 }}>Edit</button>
-                                <button onClick={() => deleteNode(node.id)}>Delete</button>
+                                {
+                                    node.id != 1 &&    
+                                    <button onClick={() => deleteNode(node.id)}>Delete</button>
+                                }
                                 {childNodes.length > 0 && (
                                     <button onClick={() => toggleExpand(node.id)}>
                                         {isExpanded ? 'Collapse' : 'Expand'}
@@ -172,11 +155,7 @@ const LocationNodeTable = () => {
             </React.Fragment>
         );
     };
-
-    
-
-    
-
+ 
     const addParentNode = async (title) => {
         try {
             await axios.post(`${API_BASE_URL}/addParent/${title}`);
