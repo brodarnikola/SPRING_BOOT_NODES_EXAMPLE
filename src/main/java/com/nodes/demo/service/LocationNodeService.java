@@ -12,49 +12,16 @@ import java.util.List;
 
 @Service
 public class LocationNodeService {
-//
-
-    private static final Logger logger = LoggerFactory.getLogger(LocationNodeService.class);
 
     @Autowired
     private LocationNodeRepository repository;
 
-   public List<LocationNode> getTree() {
+    public List<LocationNode> getTree() {
         // Get the root node and recursively fetch the whole tree
-       return repository.findAll();
+        return repository.findAll();
     }
 
-    // 1. Accessing the tree or a specific node
-    public List<LocationNode> getTree(Integer parentId) {
-        return repository.findByParentNodeIdOrderByOrderingAsc(parentId);
-    }
-
-    // 2. Adding a node as a child to a parent
-//    public LocationNode addNode(Integer parentId, String title) {
-//        LocationNode parentNode = repository.findById(parentId)
-//                .orElseThrow(() -> new RuntimeException("Parent node not found"));
-//
-//        int nextOrder = repository.findByParentNodeIdOrderByOrderingAsc(parentId).size() + 1;
-//
-//        LocationNode newNode = new LocationNode();
-//        newNode.setTitle(title);
-//        newNode.setParentNode(parentNode);
-//        newNode.setOrdering(nextOrder);
-//        return repository.save(newNode);
-//    }
-
-    public LocationNode addParentNode(  String title) {
-//        LocationNode parentNode = repository.findById(parentId)
-//                .orElseThrow(() -> new RuntimeException("Parent node not found"));
-
-        logger.debug("title list data is - {}", title);
-
-//        LocationNode parentNode = repository.findById(parentId).orElse(new LocationNode());
-
-//        int nextOrder = repository.findByParentNodeIdOrderByOrderingAsc(parentId).size() + 1;
-
-        logger.debug("parentNode list data is - {}", new LocationNode());
-
+    public LocationNode addParentNode(String title) {
         LocationNode newNode = new LocationNode();
         newNode.setTitle(title);
         newNode.setParentNodeId(null);
@@ -62,17 +29,9 @@ public class LocationNodeService {
         return repository.save(newNode);
     }
 
-    public LocationNode addChildNode(Integer parentId,  String title) {
-//        LocationNode parentNode = repository.findById(parentId)
-//                .orElseThrow(() -> new RuntimeException("Parent node not found"));
-
-        logger.debug("title list data is - {}", title);
-
-//        LocationNode parentNode = repository.findById(parentId).orElse(new LocationNode());
+    public LocationNode addChildNode(Integer parentId, String title) {
 
         int nextOrder = repository.findByParentNodeIdOrderByOrderingAsc(parentId).size();
-
-        logger.debug("parentNode list data is - {}", new LocationNode());
 
         LocationNode newNode = new LocationNode();
         newNode.setTitle(title);
@@ -104,24 +63,6 @@ public class LocationNodeService {
             deleteRecursively(child);
         }
         repository.delete(node);
-    }
-
-    public LocationNode moveNode(Integer nodeId, Integer newParentId) {
-        LocationNode node = repository.findById(nodeId)
-                .orElseThrow(() -> new RuntimeException("Node not found"));
-        LocationNode newParent = repository.findById(newParentId)
-                .orElseThrow(() -> new RuntimeException("New parent node not found"));
-
-        // Prevent moving root or under itself
-        if (node.getId() == 1 || nodeId.equals(newParentId)) {
-            throw new RuntimeException("Invalid move operation");
-        }
-
-        int nextOrder = repository.findByParentNodeIdOrderByOrderingAsc(newParentId).size() + 1;
-
-        node.setParentNodeId(null);
-        node.setOrdering(nextOrder);
-        return repository.save(node);
     }
 
     public void reorderNodes(List<ReorderRequest> reorderRequests) {

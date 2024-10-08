@@ -201,7 +201,8 @@ const LocationNodeTable = () => {
 
     const editNode = async () => {
         try {
-            await axios.put(`${API_BASE_URL}/${editNodeId}`, { title: parentTitle });
+            await axios.put(`${API_BASE_URL}/update/${editNodeId}/${parentTitle}`);
+                // , { title: parentTitle });
             fetchNodes();
             setEditNodeId(null);
             setParentTitle('');

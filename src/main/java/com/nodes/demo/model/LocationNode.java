@@ -13,30 +13,11 @@ public class LocationNode {
     @Column(nullable = false)
     private String title;
 
-//    @ManyToOne
-//    @JoinColumn(name = "parent_node_id", referencedColumnName = "id")
-//    @JsonBackReference
-//    private LocationNode parentNode;
-
     @Column(name = "parent_node_id")
     private Integer parentNodeId;
 
     @Column
     private Integer ordering;
-//
-//    @OneToMany(mappedBy = "parentNode")
-//    @JsonManagedReference  // Serializes child nodes
-//    private List<LocationNode> children;
-//
-//
-//
-//    public List<LocationNode> getChildren() {
-//        return children;
-//    }
-//
-//    public void setChildren(List<LocationNode> children) {
-//        this.children = children;
-//    }
 
 
     public Integer getId() {
