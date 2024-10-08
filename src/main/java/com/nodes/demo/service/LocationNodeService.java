@@ -69,14 +69,14 @@ public class LocationNodeService {
 
 //        LocationNode parentNode = repository.findById(parentId).orElse(new LocationNode());
 
-//        int nextOrder = repository.findByParentNodeIdOrderByOrderingAsc(parentId).size() + 1;
+        int nextOrder = repository.findByParentNodeIdOrderByOrderingAsc(parentId).size();
 
         logger.debug("parentNode list data is - {}", new LocationNode());
 
         LocationNode newNode = new LocationNode();
         newNode.setTitle(title);
         newNode.setParentNodeId(parentId);
-        newNode.setOrdering(1);
+        newNode.setOrdering(nextOrder);
         return repository.save(newNode);
     }
 

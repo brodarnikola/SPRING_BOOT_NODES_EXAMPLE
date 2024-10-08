@@ -69,8 +69,13 @@ public class LocationNodeController {
     // 4. Delete node
     @DeleteMapping("/{nodeId}")
     public ResponseEntity<Void> deleteNode(@PathVariable Integer nodeId) {
-        service.deleteNode(nodeId);
-        return ResponseEntity.ok().build();
+        if(nodeId != 1) {
+            service.deleteNode(nodeId);
+            return ResponseEntity.ok().build();
+        }
+        else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     // 5. Move node
